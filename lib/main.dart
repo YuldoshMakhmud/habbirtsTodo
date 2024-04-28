@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:habbits/database/habit_database.dart';
 import 'package:habbits/theme/theme_provider.dart';
@@ -10,10 +12,16 @@ void main() async {
   await HabitDatabase.initialize();
   await HabitDatabase().saveFirstLaunchDate();
 
-  runApp(ChangeNotifierProvider(
-    create: (context) => ThemeProvider(),
+  runApp(
+    MultiProvider(providers: [
+      //habit provider
+      ChangeNotifierProvider(create: (context)=> HabitDatabase()),
+
+      //theme provider
+      ChangeNotifierProvider(create: (context)=> ThemeProvider()),
+    ],
     child: const MyApp(),
-  ),
+    )
   );
 }
 

@@ -1,7 +1,7 @@
 import 'package:habbits/models/app_settings.dart';
 import 'package:habbits/models/habit.dart';
 import 'package:isar/isar.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
 class HabitDatabase extends ChangeNotifier{
@@ -62,9 +62,61 @@ Future<void> readHabits() async{
   notifyListeners();
 }
 //UPDATE CHECK HABIT ON AND OFF
+Future<void> updateHabitComplation(int id, bool isComplated) async{
+  //find the specific habit
+  final habit = await isar.habits.get(id);
+//update complate status
+if(habit != null){
+  await isar.writeTxn(()  async{
+// if habit is comlated => add the current date to the comlateDays List
+if(isComplated && !habit.completeDays.contains(DateTime.now())){
+  final today = DateTime.now();
+  //add current date if it's not already in the list
+  habit.completeDays.add(
+    DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ),
+  );
+}
 
+// if habit isNot comlated => remove the rurrent date from the list
+else{
+  habit.completeDays.removeWhere((date) =>
+   date.year == DateTime.now().year &&
+   date.month == DateTime.now().month &&
+   date.day == DateTime.now().day,
+   );
+}
+// save the update habits back to the db
+await isar.habits.put(habit);
+  });
+}
+//re-read from db
+readHabits();
+}
 // UPDATE -- EDIT HABIT NAME
+Future<void> uodateHbitName(int id, String newName) async{
+  //find specific habit
+  final habit =await isar.habits.get(id);
 
+  // edit habit name
+  if(habit != null){
+    // update name
+    await isar.writeTxn(() async{
+      habit.name = newName;
+      //save update habit back ti the db
+      await isar.habits.put(habit);
+    });
+  }
+  readHabits();
+}
 //DELETE -- DELETE HABITS
-
+Future<void> deleteHabit(int id)async{
+  await isar.writeTxn(() async{
+      await isar.habits.delete(id);
+});
+readHabits();
+}
 }
