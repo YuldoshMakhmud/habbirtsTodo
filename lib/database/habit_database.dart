@@ -1,7 +1,7 @@
 import 'package:habbits/models/app_settings.dart';
 import 'package:habbits/models/habit.dart';
 import 'package:isar/isar.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show ChangeNotifier;
 import 'package:path_provider/path_provider.dart';
 
 class HabitDatabase extends ChangeNotifier{
@@ -62,17 +62,17 @@ Future<void> readHabits() async{
   notifyListeners();
 }
 //UPDATE CHECK HABIT ON AND OFF
-Future<void> updateHabitComplation(int id, bool isComplated) async{
+Future<void> updateHabitCompletion(int id, bool isCompleted) async{
   //find the specific habit
   final habit = await isar.habits.get(id);
 //update complate status
 if(habit != null){
   await isar.writeTxn(()  async{
 // if habit is comlated => add the current date to the comlateDays List
-if(isComplated && !habit.completeDays.contains(DateTime.now())){
+if(isCompleted && !habit.completedDays.contains(DateTime.now())){
   final today = DateTime.now();
   //add current date if it's not already in the list
-  habit.completeDays.add(
+  habit.completedDays.add(
     DateTime(
       today.year,
       today.month,
@@ -97,7 +97,7 @@ await isar.habits.put(habit);
 readHabits();
 }
 // UPDATE -- EDIT HABIT NAME
-Future<void> uodateHbitName(int id, String newName) async{
+Future<void> updateHabitName(int id, String newName) async{
   //find specific habit
   final habit =await isar.habits.get(id);
 

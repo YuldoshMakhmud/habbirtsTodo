@@ -12,10 +12,12 @@ class Habit{
   //habit name
 late String name;
 
-//comlated days
+//completed days
 List <DateTime> completeDays =[
   // DataTime(year,month, day),
   //DataTime(2024,1,1),
   //DataTime(2024,1,2),
 ];
+
+  get completedDays => null;
 }
